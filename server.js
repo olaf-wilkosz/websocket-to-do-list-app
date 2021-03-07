@@ -3,6 +3,8 @@ const socket = require('socket.io');
 
 const app = express();
 
+const tasks = [];
+
 const server = app.listen(process.env.PORT || 8000, () => {
   console.log('Server is running...');
 });
@@ -12,3 +14,17 @@ app.use((req, res) => {
 });
 
 const io = socket(server);
+
+io.on('connection', (socket) => {
+  socket.emit('updateData', tasks);
+
+  socket.on('addTask', (newTask) => {
+    tasks.push(newTask);
+    socket.broadcast.emit('addTask', newTask);
+  });
+
+  socket.on('removeTask', (taskId) => {
+    tasks.splice(taskId, 1);
+    socket.broadcast.emit('removeTask', taskId);
+  });
+});
