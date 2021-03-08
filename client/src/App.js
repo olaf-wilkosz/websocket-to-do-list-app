@@ -1,5 +1,6 @@
 import React from 'react';
 import io from 'socket.io-client';
+import { v4 as uuidv4 } from 'uuid';
 
 class App extends React.Component {
   state = {
@@ -21,17 +22,17 @@ class App extends React.Component {
     this.socket.emit('removeTask', id);
   };
 
-  submitForm(event) {
+  submitForm = (event) => {
     event.preventDefault();
-    console.log('event.target[0].value:', event.target[0].value);
-    console.log(this.state);
-    this.addTask(this.state.taskName);
-    // this.socket.emit('addTask', taskName);
+    const { taskName } = this.state;
+    this.addTask(taskName);
+    this.socket.emit('addTask', taskName);
   };
 
   addTask(task) {
-    console.log('addTask:', task);
-    this.setState(this.state.tasks.push(task));
+    const { tasks } = this.state;
+    tasks.push(task);
+    this.setState(tasks);
   };
 
   render() {
@@ -55,8 +56,7 @@ class App extends React.Component {
           </ul>
 
           <form id="add-task-form" onSubmit={this.submitForm}>
-            <input className="text-input" autoComplete="off" type="text" placeholder="Type your description" id="task-name" value={taskName} onChange={(event) => this.setState({ taskName: event.target.value })} />
-            {console.log('taskName:', this.state.taskName)}
+            <input className="text-input" autoComplete="off" type="text" placeholder="Type your description" id="task-name" value={taskName.name} onChange={(event) => this.setState({ taskName: { id: uuidv4(), name: event.target.value } })} />
             <button className="btn" type="submit">Add</button>
           </form>
 
