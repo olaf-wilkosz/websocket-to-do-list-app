@@ -19,20 +19,19 @@ class App extends React.Component {
     const { tasks } = this.state;
     const index = tasks.indexOf(tasks.find(task => task.id === id));
     tasks.splice(index, 1);
+    this.setState({ tasks: [...this.state.tasks] });
     this.socket.emit('removeTask', id);
   };
 
   submitForm = (event) => {
     event.preventDefault();
-    const { taskName } = this.state;
-    this.addTask(taskName);
-    this.socket.emit('addTask', taskName);
+    const task = { id: uuidv4(), name: this.state.taskName };
+    this.addTask(task);
+    this.socket.emit('addTask', task);
   };
 
   addTask(task) {
-    const { tasks } = this.state;
-    tasks.push(task);
-    this.setState(tasks);
+    this.setState({ tasks: [...this.state.tasks, task] });
   };
 
   render() {
@@ -56,7 +55,15 @@ class App extends React.Component {
           </ul>
 
           <form id="add-task-form" onSubmit={this.submitForm}>
-            <input className="text-input" autoComplete="off" type="text" placeholder="Type your description" id="task-name" value={taskName.name} onChange={(event) => this.setState({ taskName: { id: uuidv4(), name: event.target.value } })} />
+            <input
+              className="text-input"
+              autoComplete="off"
+              type="text"
+              placeholder="Type your description"
+              id="task-name"
+              value={taskName}
+              onChange={(event) => this.setState({ taskName: event.target.value })}
+            />
             <button className="btn" type="submit">Add</button>
           </form>
 
