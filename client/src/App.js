@@ -16,10 +16,7 @@ class App extends React.Component {
   };
 
   removeTask(id) {
-    const { tasks } = this.state;
-    const index = tasks.indexOf(tasks.find(task => task.id === id));
-    tasks.splice(index, 1);
-    this.setState({ tasks: [...this.state.tasks] });
+    this.setState({ tasks: this.state.tasks.filter(task => task.id !== id) });
     this.socket.emit('removeTask', id);
   };
 
@@ -50,7 +47,14 @@ class App extends React.Component {
 
           <ul className="tasks-section__list" id="tasks-list">
             {tasks.map(task => (
-              <li key={task.id} className="task">{task.name}<button className="btn btn--red" onClick={() => this.removeTask(task.id)}>Remove</button></li>
+              <li key={task.id} className="task">
+                {task.name}
+                <button
+                  className="btn btn--red"
+                  onClick={() => this.removeTask(task.id)}>
+                    Remove
+                  </button>
+              </li>
             ))}
           </ul>
 
