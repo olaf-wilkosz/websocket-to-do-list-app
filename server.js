@@ -15,15 +15,16 @@ app.use((req, res) => {
 
 const io = socket(server);
 
-io.on('connection', (socket) => {
+io.on('connection', socket => {
+  console.log('connection');
   socket.emit('updateData', tasks);
 
-  socket.on('addTask', (newTask) => {
+  socket.on('addTask', newTask => {
     tasks.push(newTask);
     socket.broadcast.emit('addTask', newTask);
   });
 
-  socket.on('removeTask', (taskId) => {
+  socket.on('removeTask', taskId => {
     tasks.splice(taskId, 1);
     socket.broadcast.emit('removeTask', taskId);
   });
