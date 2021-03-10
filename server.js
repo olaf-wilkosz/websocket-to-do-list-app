@@ -1,4 +1,5 @@
 const express = require('express');
+const cors = require('cors');
 const socket = require('socket.io');
 
 const app = express();
@@ -13,7 +14,9 @@ app.use((req, res) => {
   res.status(404).send('Not found...');
 });
 
-const io = socket(server);
+app.use(cors());
+
+const io = socket(server, { cors: { origin: '*', } });
 
 io.on('connection', socket => {
   console.log('connection');
