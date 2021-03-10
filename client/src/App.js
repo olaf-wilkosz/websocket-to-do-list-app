@@ -9,7 +9,7 @@ class App extends React.Component {
   };
 
   componentDidMount() {
-    this.socket = io('http://localhost:8000/');
+    this.socket = io.connect('http://localhost:8000/');
     this.socket.on('addTask', newTask => this.addTask(newTask));
     this.socket.on('removeTask', taskId => this.removeTask(taskId));
     this.socket.on('updateData', tasks => this.updateTasks(tasks));
@@ -27,6 +27,7 @@ class App extends React.Component {
     const task = { id: uuidv4(), name: this.state.taskName };
     this.addTask(task);
     this.socket.emit('addTask', task);
+    this.setState({ taskName: '' });
   };
 
   addTask(task) {
@@ -34,7 +35,7 @@ class App extends React.Component {
   };
 
   updateTasks(tasks) {
-    this.setState({tasks: tasks});
+    this.setState({ tasks: tasks });
   };
 
   render() {
