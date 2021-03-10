@@ -4,20 +4,22 @@ import { v4 as uuidv4 } from 'uuid';
 
 class App extends React.Component {
   state = {
-    tasks: [
-      { id: 0, name: 'Shopping' },
-      { id: 1, name: 'Go out with a dog' }
-    ],
+    tasks: [],
     taskName: ''
   };
 
   componentDidMount() {
     this.socket = io('http://localhost:8000/');
+    this.socket.on('addTask', ({ newTask }) => this.addTask(newTask));
+    this.socket.on('removeTask', ({ taskId }) => this.removeTask(taskId));
+    this.socket.on('updateData', tasks => this.updateTasks(tasks));
   };
 
-  removeTask(id) {
+  removeTask(id, local) {
     this.setState({ tasks: this.state.tasks.filter(task => task.id !== id) });
-    this.socket.emit('removeTask', id);
+    if (local === true) {
+      this.socket.emit('removeTask', id);
+    };
   };
 
   submitForm = (event) => {
@@ -29,6 +31,10 @@ class App extends React.Component {
 
   addTask(task) {
     this.setState({ tasks: [...this.state.tasks, task] });
+  };
+
+  updateTasks(tasks) {
+    this.setState({tasks: tasks});
   };
 
   render() {
@@ -51,9 +57,9 @@ class App extends React.Component {
                 {task.name}
                 <button
                   className="btn btn--red"
-                  onClick={() => this.removeTask(task.id)}>
-                    Remove
-                  </button>
+                  onClick={() => this.removeTask(task.id, true)}>
+                  Remove
+                </button>
               </li>
             ))}
           </ul>
